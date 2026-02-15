@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHARLE CHARLE 👻</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital@0;1&display=swap');
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    .game-container {
+      height: 100%;
+      width: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(200, 0, 0, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(100, 0, 150, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, #050505 0%, #0d0605 30%, #0a0505 60%, #000000 100%);
+      font-family: 'Crimson Text', serif;
+      position: relative;
+      overflow: auto;
+    }
+    
+    .game-container::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 15% 30%, rgba(255, 0, 0, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(255, 0, 0, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+      animation: ambient-pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes ambient-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    
+    .title-font {
+      font-family: 'Creepster', cursive;
+      color: #ff1111;
+      text-shadow: 
+        0 0 20px rgba(255, 0, 0, 1),
+        0 0 40px rgba(139, 0, 0, 0.9),
+        0 0 60px rgba(75, 0, 130, 0.6),
+        0 0 80px rgba(255, 0, 0, 0.8),
+        0 4px 8px rgba(0, 0, 0, 0.9),
+        2px 2px 8px rgba(255, 0, 0, 0.7);
+      letter-spacing: 6px;
+      animation: evil-glow 3s ease-in-out infinite, title-twitch 0.15s ease-in-out infinite;
+    }
+    
+    @keyframes evil-glow {
+      0%, 100% { 
+        text-shadow: 
+          0 0 20px rgba(255, 0, 0, 1),
+          0 0 40px rgba(139, 0, 0, 0.9),
+          0 0 60px rgba(75, 0, 130, 0.6),
+          0 0 80px rgba(255, 0, 0, 0.8),
+          0 4px 8px rgba(0, 0, 0, 0.9),
+          2px 2px 8px rgba(255, 0, 0, 0.7);
+        filter: brightness(1);
+      }
+      25% { 
+        text-shadow: 
+          0 0 40px rgba(255, 0, 0, 1),
+          0 0 80px rgba(139, 0, 0, 1),
+          0 0 120px rgba(75, 0, 130, 0.8),
+          0 0 150px rgba(255, 0, 0, 1),
+          0 4px 12px rgba(0, 0, 0, 0.95),
+          4px 4px 12px rgba(255, 0, 0, 0.9);
+        filter: brightness(1.3);
+      }
+      50% {
+        text-shadow: 
+          0 0 20px rgba(200, 0, 200, 1),
+          0 0 40px rgba(100, 0, 100, 1),
+          0 0 60px rgba(0, 100, 200, 0.6),
+          0 0 80px rgba(200, 0, 200, 0.8),
+          0 4px 8px rgba(0, 0, 0, 0.9),
+          2px 2px 8px rgba(200, 0, 200, 0.7);
+        color: #ff00ff;
+        filter: brightness(1.1);
+      }
+      75% {
+        text-shadow: 
+          0 0 40px rgba(255, 0, 0, 1),
+          0 0 80px rgba(139, 0, 0, 1),
+          0 0 120px rgba(75, 0, 130, 0.8),
+          0 0 150px rgba(255, 0, 0, 1),
+          0 4px 12px rgba(0, 0, 0, 0.95),
+          4px 4px 12px rgba(255, 0, 0, 0.9);
+        filter: brightness(1.3);
+      }
+    }
+
+    @keyframes title-twitch {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { 
+        transform: translate(0, 0) scaleX(1); 
+      }
+      20%, 24%, 55% { 
+        transform: translate(2px, -2px) scaleX(1.02); 
+      }
+    }
+    
+    .setup-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(40,0,0,0.98) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      backdrop-filter: blur(4px);
+    }
+    
+    .setup-screen.hidden {
+      display: none;
+    }
+    
+    .setup-content {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(60,20,20,0.9) 0%, rgba(30,0,0,0.9) 100%);
+      padding: 3rem;
+      border-radius: 12px;
+      border: 4px solid #8B0000;
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.95),
+        0 0 60px rgba(255,0,0,0.5),
+        inset 0 0 30px rgba(255,0,0,0.2);
+      max-height: 90%;
+      overflow-y: auto;
+    }
+    
+    .setup-title {
+      font-family: 'Creepster', cursive;
+      font-size: 3.5rem;
+      color: #ff1111;
+      margin-bottom: 2rem;
+      text-shadow: 
+        0 0 20px rgba(255, 68, 68, 1),
+        0 0 40px rgba(255, 68, 68, 0.8),
+        0 0 60px rgba(255, 68, 68, 0.6),
+        0 0 80px rgba(255, 0, 0, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.9);
+      letter-spacing: 6px;
+      animation: evil-glow 3s ease-in-out infinite;
+    }
+    
+    .player-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .player-btn {
+      background: linear-gradient(180deg, #4a2020 0%, #2a0f0f 100%);
+      border: 3px solid #8B0000;
+      color: #f5e6d3;
+      padding: 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-family: 'Creepster', cursive;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+    }
+    
+    .player-btn:hover {
+      background: linear-gradient(180deg, #5a3030 0%, #3a1f1f 100%);
+      border-color: #ff4444;
+      box-shadow: 0 0 30px rgba(255, 68, 68, 0.6);
+      transform: scale(1.08);
+    }
+    
+    .player-btn.active {
+      background: linear-gradient(180deg, #ff2222 0%, #bb0000 100%);
+      border-color: #ff8888;
+      box-shadow: 0 0 40px rgba(255, 34, 34, 1);
+      transform: scale(1.15);
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+    
+    .difficulty-selector {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .difficulty-btn {
+      background: linear-gradient(180deg, #4a2020 0%, #2a0f0f 100%);
+      border: 3px solid #8B0000;
+      color: #f5e6d3;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Creepster', cursive;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+    
+    .difficulty-btn:hover {
+      border-color: #ff4444;
+      background: linear-gradient(180deg, #5a3030 0%, #3a1f1f 100%);
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+    }
+    
+    .difficulty-btn.active {
+      background: linear-gradient(180deg, #ff2222 0%, #bb0000 100%);
+      border-color: #ff8888;
+      box-shadow: 0 0 30px rgba(255, 34, 34, 0.9);
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+    
+    .start-btn {
+      background: linear-gradient(180deg, #ff2222 0%, #bb0000 40%, #660000 100%);
+      border: 4px solid #330000;
+      color: white;
+      padding: 1rem 3rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.3rem;
+      font-family: 'Creepster', cursive;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(255, 34, 34, 0.8);
+    }
+    
+    .start-btn:hover {
+      background: linear-gradient(180deg, #ff4444 0%, #dd0000 40%, #880000 100%);
+      box-shadow: 0 0 50px rgba(255, 34, 34, 1);
+      transform: translateY(-3px);
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .start-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .player-badge {
+      background: linear-gradient(135deg, #4a2020 0%, #2a0f0f 100%);
+      border: 2px solid #8B0000;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      color: #f5e6d3;
+      font-family: 'Crimson Text', serif;
+      font-size: 0.9rem;
+    }
+    
+    .player-badge.active {
+      border-color: #ff4444;
+      background: linear-gradient(135deg, #5a3030 0%, #3a1f1f 100%);
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+    }
+    
+    .score-display {
+      background: linear-gradient(135deg, rgba(60,20,20,0.7) 0%, rgba(30,0,0,0.7) 100%);
+      border: 3px solid #ff2222;
+      padding: 1rem;
+      border-radius: 8px;
+      color: #00ff44;
+      font-family: 'Creepster', cursive;
+      text-shadow: 0 0 15px rgba(0, 255, 68, 0.7);
+      text-align: center;
+      margin-bottom: 1rem;
+      min-width: 200px;
+      box-shadow: 0 0 20px rgba(255, 34, 34, 0.4);
+    }
+    
+    .board-3d {
+      perspective: 1200px;
+      transform-style: preserve-3d;
+    }
+    
+    .board {
+      transform: rotateX(25deg) rotateZ(0deg);
+      transform-style: preserve-3d;
+      box-shadow: 
+        0 40px 80px rgba(0,0,0,0.95),
+        0 0 120px rgba(255, 0, 0, 0.4),
+        inset 0 0 60px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 10px solid #1a0f0f;
+      background: 
+        linear-gradient(135deg, #faf6f0 0%, #ede0d0 20%, #e0d4c0 40%, #d8cdb8 60%, #d0c2b0 80%, #faf6f0 100%),
+        linear-gradient(45deg, transparent 48%, #d4caa0 49%, #d4caa0 51%, transparent 52%);
+      border-radius: 12px;
+      position: relative;
+    }
+    
+    .board::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          rgba(139, 69, 19, 0.02) 0px,
+          rgba(139, 69, 19, 0.02) 2px,
+          transparent 2px,
+          transparent 4px
+        );
+      border-radius: 12px;
+      pointer-events: none;
+    }
+    
+    .quadrant {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #1a0a0a;
+      text-shadow: 
+        2px 2px 4px rgba(0,0,0,0.4),
+        0 0 10px rgba(255, 0, 0, 0.3);
+      font-family: 'Creepster', cursive;
+      letter-spacing: 3px;
+    }
+    
+    .quadrant-yes1 { top: 0; left: 0; }
+    .quadrant-no1 { top: 0; right: 0; }
+    .quadrant-no2 { bottom: 0; left: 0; }
+    .quadrant-yes2 { bottom: 0; right: 0; }
+    
+    .divider-h, .divider-v {
+      position: absolute;
+      background: linear-gradient(90deg, transparent 0%, #1a0a0a 50%, transparent 100%);
+    }
+    
+    .divider-h {
+      width: 100%;
+      height: 6px;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+    
+    .divider-v {
+      width: 6px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+    }
+    
+    .pencil-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8));
+    }
+    
+    .pencil-base {
+      width: 300px;
+      height: 18px;
+      background: linear-gradient(180deg, #704020 0%, #5c3a1c 30%, #483218 60%, #3a2610 100%);
+      border-radius: 3px;
+      position: relative;
+      box-shadow: 
+        0 6px 12px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -2px 4px rgba(0,0,0,0.6);
+      transform: translateZ(10px);
+    }
+    
+    .pencil-top {
+      position: absolute;
+      width: 300px;
+      height: 18px;
+      background: linear-gradient(180deg, #D4A574 0%, #C08552 20%, #8B4513 50%, #6B3410 100%);
+      border-radius: 3px;
+      transform-origin: center center;
+      transition: transform 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 
+        0 -3px 6px rgba(0,0,0,0.5),
+        0 6px 12px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+      z-index: 20;
+    }
+    
+    .pencil-top::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-right: 28px solid #F5DEB3;
+      filter: drop-shadow(-2px 0 2px rgba(0,0,0,0.4));
+    }
+    
+    .pencil-top::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 12px solid #1a1a1a;
+    }
+    
+    .pencil-eraser {
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 16px;
+      background: linear-gradient(180deg, #FF7B7B 0%, #FF5555 50%, #DD3333 100%);
+      border-radius: 0 5px 5px 0;
+      box-shadow: 
+        0 3px 6px rgba(0,0,0,0.5),
+        inset -2px 0 2px rgba(255,255,255,0.2);
+    }
+    
+    .candle {
+      position: fixed;
+      width: 36px;
+      height: 95px;
+      background: linear-gradient(180deg, #fffacd 0%, #f5f5dc 30%, #eae8c8 60%, #dcdcb4 100%);
+      border-radius: 6px 6px 2px 2px;
+      box-shadow: 
+        0 0 40px rgba(255, 200, 100, 0.6),
+        0 8px 16px rgba(0,0,0,0.7),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+      z-index: 100;
+    }
+    
+    .candle-left { bottom: 40px; left: 40px; }
+    .candle-right { bottom: 40px; right: 40px; }
+    
+    .candle::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 14px;
+      background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+      border-radius: 2px;
+    }
+    
+    .flame {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 32px;
+      background: radial-gradient(ellipse 60% 100% at 50% 0%, #fff7d0 0%, #fffacd 20%, #ffed4e 40%, #ffcc00 60%, #ff9900 80%, #ff6600 95%, transparent 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: flicker-intense 0.4s ease-in-out infinite alternate;
+      box-shadow: 
+        0 0 20px #ffaa00,
+        0 0 40px #ff7700,
+        0 0 60px #ff5500;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+    
+    @keyframes flicker-intense {
+      0% { 
+        transform: translateX(-50%) scale(1) rotate(-3deg); 
+        opacity: 1;
+        height: 32px;
+      }
+      50% {
+        transform: translateX(-50%) scale(1.15) rotate(3deg);
+        opacity: 0.95;
+        height: 38px;
+      }
+      100% { 
+        transform: translateX(-50%) scale(1.05) rotate(-2deg);
+        opacity: 0.92;
+        height: 35px;
+      }
+    }
+    
+    .glow-effect {
+      position: absolute;
+      width: 180px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255, 150, 50, 0.35) 0%, rgba(255, 100, 0, 0.15) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(12px);
+    }
+    
+    .glow-left { left: -40px; bottom: -20px; }
+    .glow-right { right: -40px; bottom: -20px; }
+    
+    .invoke-btn {
+      background: linear-gradient(180deg, #ff2222 0%, #bb0000 40%, #660000 100%) !important;
+      border: 4px solid #330000 !important;
+      box-shadow: 
+        0 0 30px rgba(255, 34, 34, 0.8),
+        0 8px 20px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255,255,255,0.15),
+        inset 0 -2px 4px rgba(0,0,0,0.4) !important;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: 'Creepster', cursive !important;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      color: white !important;
+      padding: 1rem 3rem !important;
+      font-size: 1.3rem !important;
+      border-radius: 0.5rem !important;
+      cursor: pointer;
+      display: inline-block !important;
+    }
+    
+    .invoke-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+      transform: translateX(-100%);
+    }
+    
+    .invoke-btn:hover::before {
+      animation: shine 0.6s ease-in-out;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .invoke-btn:hover {
+      background: linear-gradient(180deg, #ff4444 0%, #dd0000 40%, #880000 100%) !important;
+      box-shadow: 
+        0 0 50px rgba(255, 34, 34, 1),
+        0 12px 30px rgba(0, 0, 0, 0.9),
+        inset 0 1px 0 rgba(255,255,255,0.2),
+        inset 0 -2px 6px rgba(0,0,0,0.5) !important;
+      transform: translateY(-3px) scale(1.03) !important;
+    }
+    
+    .invoke-btn:active {
+      transform: translateY(0) scale(0.98) !important;
+      box-shadow: 
+        0 0 20px rgba(255, 34, 34, 0.6),
+        0 4px 10px rgba(0, 0, 0, 0.8),
+        inset 0 2px 4px rgba(0,0,0,0.5) !important;
+    }
+    
+    .invoke-btn:disabled {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+    }
+    
+    .question-input {
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%);
+      border: 3px solid #8B0000;
+      color: #f5e6d3;
+      font-family: 'Crimson Text', serif;
+      transition: all 0.3s ease;
+      box-shadow: 
+        inset 0 2px 4px rgba(0,0,0,0.5),
+        0 0 15px rgba(255, 0, 0, 0.2);
+    }
+    
+    .question-input:focus {
+      outline: none;
+      border-color: #ff4444;
+      box-shadow: 
+        inset 0 2px 4px rgba(0,0,0,0.5),
+        0 0 30px rgba(255, 34, 34, 0.6),
+        0 0 50px rgba(255, 34, 34, 0.3);
+      background: linear-gradient(180deg, rgba(40, 0, 0, 0.8) 0%, rgba(20, 0, 0, 0.7) 100%);
+    }
+    
+    .question-input::placeholder {
+      color: rgba(245, 230, 211, 0.5);
+      font-style: italic;
+    }
+    
+    .voice-btn {
+      background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+      border: 3px solid #1e3a8a;
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 1.3rem;
+      border-radius: 6px;
+      color: white;
+      padding: 0.5rem 0.75rem;
+    }
+    
+    .voice-btn:hover {
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 0 30px rgba(37, 99, 235, 0.8);
+      transform: scale(1.08);
+    }
+    
+    .voice-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .voice-btn.listening {
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 0 40px rgba(239, 68, 68, 1);
+      animation: pulse-listening 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-listening {
+      0%, 100% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.9); }
+      50% { box-shadow: 0 0 60px rgba(239, 68, 68, 1); }
+    }
+    
+    .voice-status {
+      font-family: 'Crimson Text', serif;
+      color: #60a5fa;
+      font-size: 0.9rem;
+      text-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
+    }
+    
+    .voice-status.error {
+      color: #ff6b6b;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+    }
+    
+    .voice-status.success {
+      color: #4ade80;
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
+    }
+    
+    .answer-display {
+      font-family: 'Creepster', cursive;
+      text-shadow: 
+        0 0 20px currentColor,
+        0 0 40px currentColor,
+        0 0 60px currentColor,
+        0 4px 12px rgba(0, 0, 0, 0.9);
+      animation: answer-glow 2s ease-in-out infinite;
+      letter-spacing: 2px;
+      min-height: 80px;
+    }
+    
+    .combo-display {
+      color: #ffaa00;
+      font-family: 'Creepster', cursive;
+      text-shadow: 0 0 20px rgba(255, 170, 0, 1);
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      animation: combo-pop 0.6s ease-out;
+    }
+    
+    @keyframes combo-pop {
+      0% { 
+        transform: scale(0.5) rotate(0deg);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.25) rotate(5deg);
+      }
+      100% { 
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes answer-glow {
+      0%, 100% { 
+        opacity: 1;
+        filter: brightness(1);
+      }
+      50% { 
+        opacity: 0.7;
+        filter: brightness(1.3);
+      }
+    }
+    
+    .spirit-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      z-index: 5;
+    }
+    
+    .spirit-overlay.active {
+      opacity: 1;
+      animation: spirit-presence 2.5s ease-in-out;
+    }
+    
+    @keyframes spirit-presence {
+      0% { 
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.2) 100%);
+      }
+      25% {
+        background: radial-gradient(circle at center, rgba(255,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);
+      }
+      50% { 
+        background: radial-gradient(circle at center, rgba(150,0,200,0.15) 0%, rgba(0,0,0,0.6) 100%);
+      }
+      75% {
+        background: radial-gradient(circle at center, rgba(255,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%);
+      }
+      100% { 
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+      }
+    }
+    
+    .whisper {
+      position: fixed;
+      font-family: 'Creepster', cursive;
+      color: rgba(255, 0, 0, 0.7);
+      font-size: 1.4rem;
+      pointer-events: none;
+      animation: whisper-fade 3s ease-out forwards;
+      text-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+      z-index: 3;
+    }
+    
+    @keyframes whisper-fade {
+      0% { 
+        opacity: 0; 
+        transform: translateY(20px) rotate(0deg);
+      }
+      15% { 
+        opacity: 0.8;
+      }
+      85% {
+        opacity: 0.4;
+      }
+      100% { 
+        opacity: 0; 
+        transform: translateY(-100px) rotate(-5deg);
+      }
+    }
+    
+    .instructions {
+      color: rgba(245, 230, 211, 0.8);
+      font-style: italic;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+    
+    .current-player {
+      color: #00ff44;
+      font-family: 'Creepster', cursive;
+      text-shadow: 0 0 20px rgba(0, 255, 68, 0.8);
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+      animation: current-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes current-pulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(0, 255, 68, 0.8); }
+      50% { text-shadow: 0 0 40px rgba(0, 255, 68, 1); }
+    }
+    
+    .game-controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .reset-btn {
+      background: linear-gradient(180deg, #4a2020 0%, #2a0f0f 100%);
+      border: 3px solid #8B0000;
+      color: #f5e6d3;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Creepster', cursive;
+      transition: all 0.3s ease;
+    }
+    
+    .reset-btn:hover {
+      border-color: #ff4444;
+      background: linear-gradient(180deg, #5a3030 0%, #3a1f1f 100%);
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+    }
+
+    .stats-panel {
+      background: linear-gradient(135deg, rgba(60,20,20,0.7) 0%, rgba(30,0,0,0.7) 100%);
+      border: 3px solid #ff2222;
+      padding: 1rem;
+      border-radius: 8px;
+      color: #f5e6d3;
+      font-family: 'Crimson Text', serif;
+      margin-top: 1rem;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(255, 34, 34, 0.3);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 34, 34, 0.4);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: #ffd700;
+    }
+
+    .stat-value {
+      color: #00ff44;
+      font-weight: bold;
+    }
+
+    .error-message {
+      background: linear-gradient(135deg, rgba(255, 34, 34, 0.3) 0%, rgba(200, 0, 0, 0.3) 100%);
+      border: 3px solid #ff2222;
+      color: #ff6b6b;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      text-align: center;
+      font-family: 'Creepster', cursive;
+      box-shadow: 0 0 15px rgba(255, 34, 34, 0.5);
+    }
+
+    .error-message.hidden {
+      display: none;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full">
+  <div class="game-container flex flex-col items-center justify-center p-4 relative h-full w-full"><!-- Setup Screen -->
+   <div class="setup-screen" id="setupScreen">
+    <div class="setup-content">
+     <h2 class="setup-title">CHARLE CHARLE</h2>
+     <p class="text-red-300 mb-4 text-lg font-bold">Quantos jogadores vão participar?</p>
+     <div class="player-selector"><button class="player-btn" data-players="1">1️⃣</button> <button class="player-btn" data-players="2">2️⃣</button> <button class="player-btn" data-players="3">3️⃣</button> <button class="player-btn" data-players="4">4️⃣</button>
+     </div>
+     <p class="text-red-300 mt-6 mb-3 text-lg font-bold">Escolha a dificuldade:</p>
+     <div class="difficulty-selector"><button class="difficulty-btn" data-difficulty="fácil">🟢 FÁCIL</button> <button class="difficulty-btn" data-difficulty="normal">🟡 NORMAL</button> <button class="difficulty-btn" data-difficulty="difícil">🔴 DIFÍCIL</button>
+     </div><button class="start-btn" id="startGameBtn">🕯️ INVOCAR 🕯️</button>
+     <div id="setupError" class="error-message hidden"></div>
+    </div>
+   </div>
+   <div class="spirit-overlay" id="spiritOverlay"></div><!-- Candles -->
+   <div class="candle candle-left">
+    <div class="flame"></div>
+    <div class="glow-effect glow-left"></div>
+   </div>
+   <div class="candle candle-right">
+    <div class="flame"></div>
+    <div class="glow-effect glow-right"></div>
+   </div><!-- Game Screen -->
+   <div id="gameScreen" class="w-full flex flex-col items-center justify-center overflow-y-auto hidden"><!-- Title -->
+    <h1 class="title-font text-7xl mb-1" id="gameTitle">CHARLE CHARLE</h1>
+    <p class="instructions text-center mb-2" id="instructions">Evoque o espírito misterioso...</p><!-- Current Player -->
+    <div class="current-player" id="currentPlayer"></div><!-- Score Display -->
+    <div class="score-display" id="scoreDisplay"></div><!-- Players Info -->
+    <div class="players-info" id="playersInfo"></div><!-- 3D Board -->
+    <div class="board-3d mb-12">
+     <div class="board relative w-72 h-72 md:w-96 md:h-96 rounded-lg"><!-- Quadrants -->
+      <div class="quadrant quadrant-yes1">
+       SIM
+      </div>
+      <div class="quadrant quadrant-no1">
+       NÃO
+      </div>
+      <div class="quadrant quadrant-no2">
+       NÃO
+      </div>
+      <div class="quadrant quadrant-yes2">
+       SIM
+      </div><!-- Dividers -->
+      <div class="divider-h"></div>
+      <div class="divider-v"></div><!-- Pencils -->
+      <div class="pencil-container">
+       <div class="pencil-base"></div>
+       <div class="pencil-top" id="pencilTop">
+        <div class="pencil-eraser"></div>
+       </div>
+      </div>
+     </div>
+    </div><!-- Question Input -->
+    <div class="w-full max-w-md mb-4">
+     <div class="flex gap-2 items-center"><input type="text" id="questionInput" class="question-input flex-1 px-6 py-4 rounded-lg text-lg text-center" placeholder="Faça sua pergunta..." maxlength="150"> <button id="voiceBtn" class="voice-btn" title="Falar pergunta"> 🎤 </button>
+     </div>
+     <div id="voiceStatus" class="voice-status hidden text-center mt-2"></div>
+    </div><!-- Invoke Button --> <button id="invokeBtn" class="invoke-btn"> 🕯️ INVOCAR CHARLE 🕯️ </button> <!-- Answer Display -->
+    <div id="answerDisplay" class="answer-display text-6xl mt-8 flex items-center justify-center"></div><!-- Combo Display -->
+    <div id="comboDisplay" class="combo-display mt-4 hidden"></div><!-- Stats Panel -->
+    <div class="stats-panel" id="statsPanel">
+     <div class="stat-row"><span class="stat-label">Perguntas:</span> <span class="stat-value" id="questionCount">0</span>
+     </div>
+     <div class="stat-row"><span class="stat-label">SIMs:</span> <span class="stat-value" id="yesCount">0</span>
+     </div>
+     <div class="stat-row"><span class="stat-label">NÃOs:</span> <span class="stat-value" id="noCount">0</span>
+     </div>
+     <div class="stat-row"><span class="stat-label">Combo:</span> <span class="stat-value" id="comboCount">0</span>
+     </div>
+    </div><!-- Game Controls -->
+    <div class="game-controls"><button class="reset-btn" id="resetBtn">🔙 MENU</button>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      question_placeholder: "Faça sua pergunta..."
+    };
+
+    let config = { ...defaultConfig };
+    let isSpinning = false;
+    let currentRotation = 0;
+    let numPlayers = 0;
+    let currentPlayerIndex = 0;
+    let selectedDifficulty = '';
+    let players = [];
+    let isListening = false;
+    let gameSessionId = `session_${Date.now()}`;
+    
+    let gameStats = {
+      totalQuestions: 0,
+      totalYes: 0,
+      totalNo: 0,
+      combo: 0,
+      lastAnswer: null,
+      playerScores: []
+    };
+
+    const setupScreen = document.getElementById('setupScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const pencilTop = document.getElementById('pencilTop');
+    const questionInput = document.getElementById('questionInput');
+    const invokeBtn = document.getElementById('invokeBtn');
+    const answerDisplay = document.getElementById('answerDisplay');
+    const spiritOverlay = document.getElementById('spiritOverlay');
+    const startGameBtn = document.getElementById('startGameBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const currentPlayerDisplay = document.getElementById('currentPlayer');
+    const playersInfoDisplay = document.getElementById('playersInfo');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const comboDisplay = document.getElementById('comboDisplay');
+    const statsPanel = document.getElementById('statsPanel');
+    const setupError = document.getElementById('setupError');
+
+    const whispers = [
+      "CHARLE...",
+      "Eu estou aqui...",
+      "Você me chamou...",
+      "Responda...",
+      "SIM... ou NÃO...",
+      "O espírito fala...",
+      "Venha... venha...",
+      "Ouça os sussurros...",
+      "Charle... Charle...",
+      "Eu vejo tudo..."
+    ];
+
+    let allGameData = [];
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allGameData = data;
+      }
+    };
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+    
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isListening = true;
+        voiceBtn.classList.add('listening');
+        voiceStatus.textContent = '🎤 Ouvindo...';
+        voiceStatus.classList.remove('hidden', 'error', 'success');
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        questionInput.value = transcript;
+        voiceStatus.textContent = '✓ Pergunta captada!';
+        voiceStatus.classList.remove('hidden', 'error');
+        voiceStatus.classList.add('success');
+      };
+
+      recognition.onerror = (event) => {
+        voiceStatus.textContent = `⚠️ ${event.error}`;
+        voiceStatus.classList.remove('hidden', 'success');
+        voiceStatus.classList.add('error');
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        setTimeout(() => {
+          if (voiceStatus.textContent === '🎤 Ouvindo...') {
+            voiceStatus.classList.add('hidden');
+          }
+        }, 2000);
+      };
+    }
+
+    voiceBtn.addEventListener('click', () => {
+      if (!recognition) {
+        voiceStatus.textContent = '⚠️ Voz não suportada';
+        voiceStatus.classList.remove('hidden', 'success');
+        voiceStatus.classList.add('error');
+        return;
+      }
+      if (isListening) {
+        recognition.abort();
+      } else {
+        questionInput.value = '';
+        voiceStatus.classList.remove('success', 'error');
+        recognition.start();
+      }
+    });
+
+    document.querySelectorAll('.player-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        numPlayers = parseInt(this.dataset.players);
+      });
+    });
+
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        selectedDifficulty = this.dataset.difficulty;
+      });
+    });
+
+    startGameBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', resetToMenu);
+
+    async function initDataSDK() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+      }
+    }
+
+    function getDifficultyMultiplier() {
+      const multipliers = { 'fácil': 1, 'normal': 2, 'difícil': 3 };
+      return multipliers[selectedDifficulty] || 2;
+    }
+
+    function calculateScore(answer) {
+      return 10 * getDifficultyMultiplier();
+    }
+
+    function updatePlayerScore(playerIdx, points) {
+      if (!gameStats.playerScores[playerIdx]) {
+        gameStats.playerScores[playerIdx] = 0;
+      }
+      gameStats.playerScores[playerIdx] += points;
+    }
+
+    function updateScoreDisplay() {
+      if (gameStats.playerScores.length > 0) {
+        const currentScore = gameStats.playerScores[currentPlayerIndex] || 0;
+        scoreDisplay.textContent = `🎯 ${currentScore}`;
+      }
+    }
+
+    function startGame() {
+      setupError.classList.add('hidden');
+      
+      if (numPlayers === 0) {
+        setupError.textContent = '⚠️ Escolha a quantidade de jogadores!';
+        setupError.classList.remove('hidden');
+        return;
+      }
+      if (selectedDifficulty === '') {
+        setupError.textContent = '⚠️ Escolha o nível de dificuldade!';
+        setupError.classList.remove('hidden');
+        return;
+      }
+
+      players = [];
+      gameStats = {
+        totalQuestions: 0,
+        totalYes: 0,
+        totalNo: 0,
+        combo: 0,
+        lastAnswer: null,
+        playerScores: Array(numPlayers).fill(0)
+      };
+
+      const names = ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4'];
+      for (let i = 0; i < numPlayers; i++) {
+        players.push({ name: names[i], answered: 0, score: 0 });
+      }
+
+      currentPlayerIndex = 0;
+      setupScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      updatePlayerDisplay();
+      updateScoreDisplay();
+      updateStats();
+      initDataSDK();
+    }
+
+    function resetToMenu() {
+      setupScreen.classList.remove('hidden');
+      gameScreen.classList.add('hidden');
+      document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+      numPlayers = 0;
+      selectedDifficulty = '';
+      currentPlayerIndex = 0;
+      players = [];
+      questionInput.value = '';
+      answerDisplay.textContent = '';
+      comboDisplay.classList.add('hidden');
+      voiceStatus.classList.add('hidden');
+      setupError.classList.add('hidden');
+    }
+
+    function updatePlayerDisplay() {
+      currentPlayerDisplay.textContent = `🕯️ ${players[currentPlayerIndex].name} 🕯️`;
+      
+      let infoHTML = '';
+      players.forEach((player, idx) => {
+        const activeClass = idx === currentPlayerIndex ? 'active' : '';
+        const score = gameStats.playerScores[idx] || 0;
+        infoHTML += `<div class="player-badge ${activeClass}">${player.name}: ${score}</div>`;
+      });
+      playersInfoDisplay.innerHTML = infoHTML;
+    }
+
+    function updateStats() {
+      document.getElementById('questionCount').textContent = gameStats.totalQuestions;
+      document.getElementById('yesCount').textContent = gameStats.totalYes;
+      document.getElementById('noCount').textContent = gameStats.totalNo;
+      document.getElementById('comboCount').textContent = gameStats.combo;
+    }
+
+    function createWhisper() {
+      const whisper = document.createElement('div');
+      whisper.className = 'whisper';
+      whisper.textContent = whispers[Math.floor(Math.random() * whispers.length)];
+      whisper.style.left = Math.random() * 80 + 10 + '%';
+      whisper.style.top = Math.random() * 60 + 20 + '%';
+      document.body.appendChild(whisper);
+      
+      setTimeout(() => whisper.remove(), 3000);
+    }
+
+    async function saveToSheet(question, answer) {
+      if (!window.dataSdk) return;
+
+      const record = {
+        player_name: players[currentPlayerIndex].name,
+        question: question,
+        answer: answer,
+        timestamp: new Date().toISOString(),
+        game_session: gameSessionId,
+        difficulty: selectedDifficulty
+      };
+
+      try {
+        const result = await window.dataSdk.create(record);
+      } catch (e) {
+      }
+    }
+
+    function validateQuestion(question) {
+      const minLengths = { 'fácil': 5, 'normal': 10, 'difícil': 15 };
+      return question.length >= (minLengths[selectedDifficulty] || 10);
+    }
+
+    function spinPencil() {
+      if (isSpinning) return;
+      
+      const question = questionInput.value.trim();
+      if (!question) {
+        questionInput.style.borderColor = '#ff4444';
+        setTimeout(() => { questionInput.style.borderColor = ''; }, 1000);
+        return;
+      }
+
+      if (!validateQuestion(question)) {
+        voiceStatus.textContent = '⚠️ Pergunta muito curta!';
+        voiceStatus.classList.remove('hidden', 'success');
+        voiceStatus.classList.add('error');
+        setTimeout(() => voiceStatus.classList.add('hidden'), 2000);
+        return;
+      }
+
+      isSpinning = true;
+      invokeBtn.disabled = true;
+      answerDisplay.textContent = '';
+      comboDisplay.classList.add('hidden');
+
+      spiritOverlay.classList.add('active');
+      
+      const whisperInterval = setInterval(createWhisper, 400);
+
+      const difficultySpeedMap = { 'fácil': 1.5, 'normal': 2.0, 'difícil': 2.8 };
+      const speedMultiplier = difficultySpeedMap[selectedDifficulty] || 2.0;
+
+      const fullRotations = (4 + Math.random() * 3) * 360;
+      const finalAngle = Math.random() * 360;
+      const totalRotation = currentRotation + fullRotations + finalAngle;
+      
+      const spinDuration = 2.4 / speedMultiplier;
+      pencilTop.style.transition = `transform ${spinDuration}s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+      pencilTop.style.transform = `rotate(${totalRotation}deg)`;
+      currentRotation = totalRotation;
+
+      setTimeout(() => {
+        clearInterval(whisperInterval);
+        spiritOverlay.classList.remove('active');
+        
+        const normalizedAngle = totalRotation % 360;
+        let answer, color, isYes;
+        
+        if ((normalizedAngle >= 0 && normalizedAngle < 90) || 
+            (normalizedAngle >= 180 && normalizedAngle < 270)) {
+          answer = "SIM ✓";
+          color = "#00ff44";
+          isYes = true;
+          gameStats.totalYes++;
+        } else {
+          answer = "NÃO ✗";
+          color = "#ff4444";
+          isYes = false;
+          gameStats.totalNo++;
+        }
+
+        if (gameStats.lastAnswer === isYes) {
+          gameStats.combo++;
+        } else {
+          gameStats.combo = 1;
+        }
+        gameStats.lastAnswer = isYes;
+
+        const baseScore = calculateScore(answer);
+        const comboBonus = gameStats.combo > 1 ? gameStats.combo * 5 : 0;
+        const totalScore = baseScore + comboBonus;
+        
+        updatePlayerScore(currentPlayerIndex, totalScore);
+        
+        answerDisplay.textContent = answer;
+        answerDisplay.style.color = color;
+
+        if (gameStats.combo > 1) {
+          comboDisplay.textContent = `🔥 COMBO x${gameStats.combo}!`;
+          comboDisplay.classList.remove('hidden');
+        }
+        
+        gameStats.totalQuestions++;
+        players[currentPlayerIndex].answered++;
+        
+        updateStats();
+        updateScoreDisplay();
+        saveToSheet(question, answer);
+        
+        setTimeout(() => nextPlayer(), 2000);
+        
+      }, spinDuration * 1000);
+    }
+
+    function nextPlayer() {
+      questionInput.value = '';
+      voiceStatus.classList.add('hidden');
+      currentPlayerIndex = (currentPlayerIndex + 1) % numPlayers;
+      updatePlayerDisplay();
+      isSpinning = false;
+      invokeBtn.disabled = false;
+      answerDisplay.textContent = '';
+    }
+
+    invokeBtn.addEventListener('click', spinPencil);
+    
+    questionInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') spinPencil();
+    });
+
+    function applyConfig(cfg) {
+      questionInput.placeholder = cfg.question_placeholder || defaultConfig.question_placeholder;
+    }
+
+    async function onConfigChange(newConfig) {
+      config = { ...defaultConfig, ...newConfig };
+      applyConfig(config);
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ["question_placeholder", cfg.question_placeholder || defaultConfig.question_placeholder]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    applyConfig(config);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ce0aa59928e4ae8',t:'MTc3MTExNTA5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
